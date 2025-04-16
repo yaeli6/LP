@@ -14,6 +14,45 @@
       padding: 0;
     }
 
+    /* HERO */
+    .hero {
+      position: relative;
+      background-image: url('./images/hero-banner.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+
+    .hero .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+
+    .hero .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+    }
+
+    .hero h1 {
+      font-size: 3em;
+      margin: 0;
+    }
+
+    .hero p {
+      font-size: 1.3em;
+      margin-top: 10px;
+    }
+
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -21,33 +60,27 @@
       background: white;
     }
 
-    h1, h2 {
-      font-weight: 600;
-      color: #111;
-    }
-
-    h1 {
-      font-size: 2.2em;
-      margin-bottom: 10px;
-    }
-
     h2 {
       margin-top: 40px;
       font-size: 1.5em;
+      font-weight: 600;
     }
 
     p {
       margin-bottom: 20px;
     }
 
-    .highlight {
-      background-color: #111;
-      color: white;
-      padding: 8px 16px;
-      display: inline-block;
-      margin-top: 20px;
-      border-radius: 4px;
-      text-decoration: none;
+    /* IMAGE SECTION */
+    .image-section {
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .image-section img {
+      width: 100%;
+      max-width: 700px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     form {
@@ -80,6 +113,7 @@
     .symbol {
       font-size: 2em;
       margin-top: 20px;
+      text-align: center;
     }
 
     footer {
@@ -87,42 +121,49 @@
       font-size: 0.9em;
       color: #888;
       margin-top: 60px;
+      padding-bottom: 40px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>The Chair Project</h1>
-    <p><strong>Building a true circular economy for Vienna</strong></p>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1>The Chair Project</h1>
+      <p>Building a true circular economy for Vienna</p>
+    </div>
+  </div>
 
-    <h2>Our Vision</h2>
+  <div class="container">
+    <h2>More About the Vision</h2>
     <p>
       The City Project is inviting Vienna-based creatives and small brands to reimagine the city's waste.
-      We work with artists, students, and local makers to turn discarded materials into thoughtful, useful things — right here in Vienna.
+      We work with artists, students, and small brands to turn discarded materials into thoughtful, useful things — right here in Vienna.
     </p>
     <p>
       Our model is simple: local materials, local collaborations, limited output — and real creativity in how we reuse.
     </p>
 
-    <h2>Why We Started</h2>
+    <h2>The Problem & Our Solution</h2>
     <p>
-      With the rising waste in Vienna, we saw an opportunity: to turn the city’s overlooked materials into a creative playground for sustainable design.
-      By collecting smart, repurposing with care, and rethinking design from the ground up — we aim to build a model of what a circular city can look like.
+      With the rising waste in Vienna, we saw an opportunity: to turn the city’s waste into a creative playground for sustainable design.
+      By collecting smart, repulsing the materials and repurposing them into new products, we make sustainability tangible and exciting.
     </p>
 
     <h2>What Drives Us</h2>
     <p>
-      Our goal is to use the local resources (“trash”) while strengthening the small brands that shape the creative life of this city.
+      Our drive is to use the local resources (“trash”) while strengthening the local brands.
     </p>
 
     <h2>Who We Are</h2>
     <p>
-      Repurposing is a craft — and we’re here to help develop it.  
-      We specialize in materials and collaborate with others to explore new ways of reuse.
+      Repurposing is a field to develop — and this is exactly what we want to perfect.
+      We specialize in materials and are committed to exploring how reuse can grow and be implemented back into the local economy.
     </p>
     <p>
-      This project is a field lab: for exploring, experimenting, and making reuse feel both normal and inspiring. It's not about selling sustainability. It's about making it work — locally, beautifully, practically.
+      For us, the closest thing to true sustainability is local, smart, small-scale solutions. And we want to make that approach easy and “normal” for everyone to adopt.
     </p>
 
     <h2>Our Process</h2>
@@ -130,20 +171,25 @@
       We collect discarded materials from across Vienna — fabric, wood, metal, objects.
     </p>
     <p>
-      Collaborators can submit a product or idea, and we’ll work with you to think about how to bring reused materials into it.
+      You can add an application of your product or idea, and we will help you think how to implement repurposed materials into it.
     </p>
     <p>
-      Right now, we’re launching a small line of bags made from repurposed leather — cut from objects that were headed for the landfill.
+      Right now, we’re going out with a small campaign featuring bags made of repurposed leather from different discarded objects.
     </p>
 
-    <h2>How You Know It’s Us</h2>
+    <div class="image-section">
+      <img src="./images/bag-sample.jpg" alt="Repurposed leather bag example">
+      <p style="font-size: 0.9em; color: #666;">Example: Bag made from discarded leather in Vienna</p>
+    </div>
+
+    <h2>How to Recognize Us</h2>
     <p>Look for this symbol:</p>
     <div class="symbol">♻️</div>
 
-    <h2>Get In Touch</h2>
+    <h2>Work With Us</h2>
     <p>
       Are you a small brand that wants to implement a more sustainable vision in your design line?  
-      Want to reach a bigger, more conscious crowd?  
+      Want to reach a bigger, more conscious crowd?
       Let’s talk.
     </p>
 
