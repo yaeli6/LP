@@ -1,76 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Homepage</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-white text-gray-800">
-    <!-- Header -->
-    <header class="flex justify-between items-center px-6 py-4 shadow-md">
-      <div class="text-2xl font-bold">MyLogo</div>
-      <nav class="space-x-4 hidden md:flex">
-        <a href="#" class="hover:text-blue-600">Home</a>
-        <a href="#" class="hover:text-blue-600">About</a>
-        <a href="#" class="hover:text-blue-600">Services</a>
-        <a href="#" class="hover:text-blue-600">Contact</a>
-      </nav>
-      <div class="md:hidden">
-        <!-- Mobile menu icon (optional, for future enhancement) -->
-        <button class="text-xl">☰</button>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <title>The Chair Project – The City Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f9f9f9;
+      color: #222;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+    }
 
-    <!-- Hero Section with Background Image -->
-    <section class="relative h-[80vh] flex items-center justify-center text-center text-white bg-cover bg-center" style="background-image: url('https://source.unsplash.com/1600x900/?technology,business');">
-      <div class="bg-black/60 absolute inset-0"></div>
-      <div class="relative z-10 px-4">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">Grow Your Business with Us</h1>
-        <p class="text-lg md:text-xl mb-6 max-w-xl mx-auto">We provide modern, secure, and high-performing digital solutions tailored for your goals.</p>
-        <a href="#signup" class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">Get Started</a>
-      </div>
-    </section>
+    /* HERO BANNER */
+    .hero {
+      background-image: url('./images/hero-banner.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+    }
 
-    <!-- Features -->
-    <section class="py-16 px-6 max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
-      <div>
-        <div class="text-4xl mb-2">🚀</div>
-        <h3 class="font-semibold text-xl mb-2">Fast Performance</h3>
-        <p>Lightning-fast loading for an optimized user experience.</p>
-      </div>
-      <div>
-        <div class="text-4xl mb-2">🔒</div>
-        <h3 class="font-semibold text-xl mb-2">Secure Solutions</h3>
-        <p>Bank-grade security measures for your peace of mind.</p>
-      </div>
-      <div>
-        <div class="text-4xl mb-2">💡</div>
-        <h3 class="font-semibold text-xl mb-2">Creative Design</h3>
-        <p>Visually stunning and user-friendly interfaces.</p>
-      </div>
-    </section>
+    .hero h1 {
+      font-size: 3em;
+      margin: 0;
+    }
 
-    <!-- Signup Form -->
-    <section id="signup" class="bg-gray-100 py-16 px-6">
-      <div class="max-w-xl mx-auto text-center">
-        <h2 class="text-2xl font-bold mb-4">Join Our Newsletter</h2>
-        <p class="mb-6">Get the latest tips, offers, and updates delivered straight to your inbox.</p>
-        <form class="flex flex-col sm:flex-row gap-4 justify-center">
-          <input type="email" placeholder="Enter your email" class="px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1" required />
-          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">Sign Up</button>
-        </form>
-      </div>
-    </section>
+    .hero p {
+      font-size: 1.3em;
+      margin-top: 10px;
+    }
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-6 text-center text-sm">
-      <p>&copy; 2025 MyWebsite. All rights reserved.</p>
-      <div class="space-x-4 mt-2">
-        <a href="#" class="hover:underline">Privacy</a>
-        <a href="#" class="hover:underline">Terms</a>
-        <a href="#" class="hover:underline">Twitter</a>
-      </div>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: white;
+    }
+
+    h2 {
+      margin-top: 40px;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    /* IMAGE SECTION */
+    .image-section {
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .image-section img {
+      width: 100%;
+      max-width: 700px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    form {
+      margin-top: 40px;
+      padding: 20px;
+      background: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: #111;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1em;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .symbol {
+      font-size: 2em;
+      margin-top: 20px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #888;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <h1>The Chair Project</h1>
+    <p>Building a true circular economy for Vienna</p>
+  </div>
+
+  <div class="container">
+    <h2>Our Vision</h2>
+    <p>The City Project is inviting Vienna-based creatives and small brands to reimagine the city's waste...</p>
+
+    <!-- IMAGE SECTION -->
+    <div class="image-section">
+      <img src="./images/bag-sample.jpg" alt="Repurposed leather bag example">
+      <p style="font-size: 0.9em; color: #666;">Example: Bag made from discarded leather in Vienna</p>
+    </div>
+
+    <!-- The rest of the content remains the same... -->
+    <!-- (copy the rest of the page structure here from previous version) -->
+
+    <footer>
+      The City Project · Based in Vienna · hello@thecityproject.at
     </footer>
-  </body>
+  </div>
+
+</body>
 </html>
