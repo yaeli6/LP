@@ -1,215 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>The Chair Project – The City Project</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The City Project – Circular Economy in Vienna</title>
   <style>
     body {
       font-family: 'Helvetica Neue', sans-serif;
-      background-color: #f9f9f9;
-      color: #222;
-      line-height: 1.7;
+      line-height: 1.6;
       margin: 0;
       padding: 0;
-    }
-
-    /* HERO */
-    .hero {
-      position: relative;
-      background-image: url('./images/hero-banner.jpg');
-      background-size: cover;
-      background-position: center;
-      height: 60vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-    }
-
-    .hero .overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1;
-    }
-
-    .hero .hero-content {
-      position: relative;
-      z-index: 2;
-      padding: 20px;
-    }
-
-    .hero h1 {
-      font-size: 3em;
-      margin: 0;
-    }
-
-    .hero p {
-      font-size: 1.3em;
-      margin-top: 10px;
+      background: #f9f9f9;
+      color: #222;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 850px;
       margin: 0 auto;
       padding: 40px 20px;
-      background: white;
-    }
-
-    h2 {
-      margin-top: 40px;
-      font-size: 1.5em;
-      font-weight: 600;
+      background: #fff;
     }
 
     p {
       margin-bottom: 20px;
+      font-size: 1.05rem;
     }
 
-    /* IMAGE SECTION */
-    .image-section {
-      margin: 40px 0;
-      text-align: center;
-    }
-
-    .image-section img {
-      width: 100%;
-      max-width: 700px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    form {
+    .cta {
+      background-color: #e2f0ea;
+      padding: 30px;
       margin-top: 40px;
-      padding: 20px;
-      background: #f1f1f1;
-      border-radius: 8px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1em;
-    }
-
-    button {
-      background-color: #111;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1em;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .symbol {
-      font-size: 2em;
-      margin-top: 20px;
+      border-radius: 10px;
       text-align: center;
+    }
+
+    .cta a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #2d4739;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
     }
 
     footer {
-      text-align: center;
-      font-size: 0.9em;
-      color: #888;
       margin-top: 60px;
-      padding-bottom: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    nav {
+      background-color: #fff;
+      padding: 10px 20px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #2d4739;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      nav a {
+        display: block;
+        margin: 10px 0;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="overlay"></div>
-    <div class="hero-content">
-      <h1>The Chair Project</h1>
-      <p>Building a true circular economy for Vienna</p>
-    </div>
-  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="scope.html">Scope & Approach</a>
+  </nav>
 
   <div class="container">
-    <h2>More About the Vision</h2>
-    <p>
-      The City Project is inviting Vienna-based creatives and small brands to reimagine the city's waste.
-      We work with artists, students, and small brands to turn discarded materials into thoughtful, useful things — right here in Vienna.
-    </p>
-    <p>
-      Our model is simple: local materials, local collaborations, limited output — and real creativity in how we reuse.
-    </p>
+    <p>We believe in a local circular economy — not as a trend, but as a necessity. The materials we use every day have already gone through immense journeys: shaped, refined, transported, consumed. It took time, energy, and resources to create them. Discarding them without a second thought is not only wasteful — it’s a missed opportunity.</p>
 
-    <h2>The Problem & Our Solution</h2>
-    <p>
-      With the rising waste in Vienna, we saw an opportunity: to turn the city’s waste into a creative playground for sustainable design.
-      By collecting smart, repulsing the materials and repurposing them into new products, we make sustainability tangible and exciting.
-    </p>
+    <p>What if the things around us had a second life? A chair, a coat, a wooden frame. These objects carry stories, textures, and materials that still have value. Slowing down, rethinking what we throw away, and placing more care into the objects we choose to keep — that’s where we begin.</p>
 
-    <h2>What Drives Us</h2>
-    <p>
-      Our drive is to use the local resources (“trash”) while strengthening the local brands.
-    </p>
+    <p>The City Project is creating a new system in Vienna — one built around reuse, collaboration, and meaning. We collect discarded materials from the city — wood, leather, textiles, metal, objects — and we work with artists, students, and small brands to transform them into thoughtful, useful pieces.</p>
 
-    <h2>Who We Are</h2>
-    <p>
-      Repurposing is a field to develop — and this is exactly what we want to perfect.
-      We specialize in materials and are committed to exploring how reuse can grow and be implemented back into the local economy.
-    </p>
-    <p>
-      For us, the closest thing to true sustainability is local, smart, small-scale solutions. And we want to make that approach easy and “normal” for everyone to adopt.
-    </p>
+    <p>The process is simple and evolving:<br>
+    We gather what the city no longer wants.<br>
+    We clean, sort, and catalogue.<br>
+    We rethink design from the material up — not forcing ideas, but letting the materials guide us.<br>
+    And we collaborate with local creators to produce small, smart, beautiful collections with purpose.</p>
 
-    <h2>Our Process</h2>
-    <p>
-      We collect discarded materials from across Vienna — fabric, wood, metal, objects.
-    </p>
-    <p>
-      You can add an application of your product or idea, and we will help you think how to implement repurposed materials into it.
-    </p>
-    <p>
-      Right now, we’re going out with a small campaign featuring bags made of repurposed leather from different discarded objects.
-    </p>
+    <p>This isn’t about mass production. It’s about building a model that works locally, with resources already here, and using design as a tool to reconnect people with their environment.</p>
 
-    <div class="image-section">
-      <img src="./images/bag-sample.jpg" alt="Repurposed leather bag example">
-      <p style="font-size: 0.9em; color: #666;">Example: Bag made from discarded leather in Vienna</p>
+    <div class="cta">
+      <p>Are you a student, an artist, a shop owner, or a small brand looking to bring circularity into your work or life?</p>
+      <p>Do you want to experiment with materials that already exist, to create something meaningful, sustainable — and entirely your own?</p>
+      <a href="#contact">Let’s explore how we can work together</a>
     </div>
 
-    <h2>How to Recognize Us</h2>
-    <p>Look for this symbol:</p>
-    <div class="symbol">♻️</div>
+    <p>Why Vienna?<br>
+    Because the city is already producing valuable materials every day — they’re just being overlooked. Because a circular system must start somewhere. And because Vienna is full of talent, ideas, and potential waiting to be connected.</p>
 
-    <h2>Work With Us</h2>
-    <p>
-      Are you a small brand that wants to implement a more sustainable vision in your design line?  
-      Want to reach a bigger, more conscious crowd?
-      Let’s talk.
-    </p>
-
-    <form action="mailto:your@email.com" method="post" enctype="text/plain">
-      <label for="name">Your Name</label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="email">Your Email</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="message">Your Message</label>
-      <textarea id="message" name="message" rows="6" placeholder="Tell us a bit about your brand or idea..."></textarea>
-
-      <button type="submit">Send</button>
-    </form>
+    <p>We don’t need another green label. We need a method. A system that works on a small scale, with high creativity, and real social and environmental value. That’s what we’re building.</p>
 
     <footer>
-      The City Project · Based in Vienna · hello@thecityproject.at
+      &copy; 2025 The City Project. All rights reserved.
     </footer>
   </div>
-
 </body>
 </html>
