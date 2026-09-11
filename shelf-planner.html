@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shelf Planner – The City Project</title>
+  <style>
+    :root {
+      --ink: #222;
+      --brand: #2d4739;
+      --brand-light: #e2f0ea;
+      --line: #ddd;
+      --bg: #f9f9f9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+      background: #fff;
+    }
+    nav {
+      background-color: #fff;
+      padding: 10px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+    }
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: var(--brand);
+      font-weight: bold;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: 4px; }
+    h2 { font-size: 1.2rem; margin-top: 2.5rem; border-bottom: 2px solid var(--brand-light); padding-bottom: 6px; }
+    h3 { font-size: 1.02rem; margin-bottom: 4px; }
+    p.lede { color: #555; margin-top: 0; }
+    p { font-size: 1rem; }
+    .step-badge {
+      display: inline-block;
+      background: var(--brand);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border-radius: 20px;
+      padding: 2px 10px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      background: #fff;
+    }
+    .card.soft { background: var(--brand-light); border-color: var(--brand-light); }
+    .row { display: flex; flex-wrap: wrap; gap: 20px; }
+    .col { flex: 1 1 220px; min-width: 200px; }
+    label { display: block; font-size: 0.82rem; font-weight: bold; margin-bottom: 4px; color: #444; }
+    input[type=number], input[type=text], select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+    .checkbox-line { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .checkbox-line input { width: auto; margin: 0; }
+    button {
+      background-color: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--brand);
+      border: 1.5px solid var(--brand);
+    }
+    button.secondary.active { background: var(--brand); color: #fff; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+    .hint { font-size: 0.82rem; color: #666; margin: 4px 0 14px; }
+    #photoWrap {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    #shelfCanvas { display: block; max-width: 100%; cursor: crosshair; }
+    #photoWrap.empty { padding: 40px; text-align: center; color: #999; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+    th { background: var(--brand-light); color: var(--brand); }
+    .muted { color: #777; font-size: 0.85rem; }
+    .pill { display:inline-block; background:#fff; border:1px solid var(--brand); color:var(--brand); border-radius:14px; padding:2px 10px; font-size:0.78rem; margin-right:6px; }
+    .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .ref-card { border: 1px solid var(--line); border-radius: 8px; padding: 14px; font-size: 0.88rem; }
+    .ref-card.picked { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-light); }
+    .ref-card h4 { margin: 0 0 6px; font-size: 0.95rem; color: var(--brand); }
+    .ref-card .tag { font-size: 0.72rem; color: #888; }
+    #results { display: none; }
+    #schematicHolder svg { max-width: 100%; height: auto; }
+    footer { margin-top: 60px; text-align: center; font-size: 0.9rem; color: #999; }
+    ol.steps li { margin-bottom: 8px; }
+    .warn { color: #a35b00; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      .container { padding: 20px; }
+      nav a { display: block; margin: 10px 0; }
+    }
+
+    @media print {
+      nav, .no-print { display: none !important; }
+      body, .container { background: #fff; }
+      .card { break-inside: avoid; border-color: #999; }
+      a[href]:after { content: ""; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="no-print">
+    <a href="index.html">Home</a>
+    <a href="scope-and-approach.html">Scope &amp; Approach</a>
+    <a href="shelf-planner.html">Shelf Planner</a>
+  </nav>
+
+  <div class="container">
+    <h1>Shelf Planner</h1>
+    <p class="lede">Photograph a space, tell us what it needs to hold, and get a shelving system, a scaled drawing, and a printable cut list with every part sized and counted — useful for planning a build with reclaimed or new material alike.</p>
+
+    <h2><span class="step-badge">1</span>Photograph the space (optional but recommended)</h2>
+    <p class="hint">Upload a straight-on photo of the wall, alcove, or opening. To convert pixels to real measurements, mark a line of known length in the photo (a door, a tile, a tape measure) — then mark the two opposite corners of the space you want shelving in. Both values stay editable below if the photo has perspective distortion.</p>
+
+    <div class="card">
+      <div class="btn-row">
+        <input type="file" id="photoInput" accept="image/*" class="no-print" />
+      </div>
+      <div id="photoWrap" class="empty">No photo loaded — you can still enter dimensions manually below.</div>
+
+      <div class="btn-row" style="margin-top:14px;">
+        <button type="button" class="secondary no-print" id="btnCalibrate" disabled>1. Mark a known-length reference</button>
+        <span id="calStatus" class="hint" style="margin:0;"></span>
+      </div>
+      <div id="calInputWrap" class="row" style="display:none;">
+        <div class="col">
+          <label for="calRealLength">Real-world length of that line (cm)</label>
+          <input type="number" id="calRealLength" min="1" step="0.1" placeholder="e.g. 200 for a standard door" />
+        </div>
+        <div class="col" style="display:flex;align-items:flex-end;">
+          <button type="button" id="btnSetScale" class="no-print">Set scale</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="secondary no-print" id="btnArea" disabled>2. Mark the shelf area (two opposite corners)</button>
+        <span id="areaStatus" class="hint" style="margin:0;"></span>
+      </div>
+    </div>
+
+    <h2><span class="step-badge">2</span>Space &amp; storage needs</h2>
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <label for="widthCm">Opening width (cm)</label>
+          <input type="number" id="widthCm" min="20" step="0.5" placeholder="e.g. 90" />
+        </div>
+        <div class="col">
+          <label for="heightCm">Opening height (cm)</label>
+          <input type="number" id="heightCm" min="20" step="0.5" placeholder="e.g. 180" />
+        </div>
+        <div class="col">
+          <label for="depthCm">Usable depth (cm)</label>
+          <input type="number" id="depthCm" min="10" step="0.5" placeholder="e.g. 30" />
+        </div>
+      </div>
+      <p class="hint">Depth can't be read from a single frontal photo — measure it by hand (tape measure or stride) and enter it here.</p>
+
+      <div class="row">
+        <div class="col">
+          <label for="useCase">What will it hold?</label>
+          <select id="useCase">
+            <option value="books">Books &amp; media</option>
+            <option value="kitchen">Kitchen / pantry</option>
+            <option value="closet">Closet / wardrobe</option>
+            <option value="garage">Garage / workshop / tools</option>
+            <option value="display">Display / decor</option>
+            <option value="office">Office / files</option>
+            <option value="kids">Kids' room</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="flexibility">Shelf positions</label>
+          <select id="flexibility">
+            <option value="adjustable">Adjustable (shelf pins)</option>
+            <option value="fixed">Fixed (screwed / cleated)</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="material">Material</label>
+          <select id="material">
+            <option value="plywood">Plywood</option>
+            <option value="solid">Solid wood</option>
+            <option value="mdf">MDF</option>
+            <option value="melamine">Melamine / particleboard</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="loadClass">Expected load</label>
+          <select id="loadClass">
+            <option value="auto">Auto (based on use)</option>
+            <option value="light">Light (decor, folded linens)</option>
+            <option value="medium">Medium (books, dishware)</option>
+            <option value="heavy">Heavy (tools, equipment)</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="thickness">Panel thickness</label>
+          <select id="thickness">
+            <option value="auto">Auto (based on load &amp; span)</option>
+            <option value="18">18 mm (~3/4 in)</option>
+            <option value="25">25 mm (~1 in)</option>
+          </select>
+        </div>
+        <div class="col" style="display:flex; align-items:flex-end;">
+          <div class="checkbox-line">
+            <input type="checkbox" id="includeBack" checked />
+            <label for="includeBack" style="margin:0;">Include back panel (adds rigidity)</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" id="btnGenerate" class="no-print">Generate shelf plan</button>
+    </div>
+
+    <div id="results">
+      <h2>Recommended system</h2>
+      <div class="card soft">
+        <h3 id="planTitle"></h3>
+        <p id="planDesc" style="margin-bottom:6px;"></p>
+        <p id="planSpecs" class="muted"></p>
+        <p id="planWarn" class="warn"></p>
+      </div>
+
+      <h2>Visual solution</h2>
+      <div class="row">
+        <div class="col" id="overlayCol" style="display:none;">
+          <h3>On your photo</h3>
+          <div id="overlayHolder"></div>
+        </div>
+        <div class="col">
+          <h3>Scaled elevation drawing</h3>
+          <div id="schematicHolder"></div>
+        </div>
+      </div>
+
+      <h2>Print plan — cut list</h2>
+      <p class="muted">All lengths are finished part sizes. Confirm against your actual material thickness before cutting.</p>
+      <table id="cutListTable">
+        <thead>
+          <tr><th>Part</th><th>Qty</th><th>Length</th><th>Depth</th><th>Thickness</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Hardware &amp; materials</h3>
+      <table id="hardwareTable">
+        <thead>
+          <tr><th>Item</th><th>Qty</th><th>Notes</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Assembly steps</h3>
+      <ol class="steps" id="stepsList"></ol>
+
+      <div class="btn-row no-print">
+        <button type="button" id="btnPrint">Print / save as PDF</button>
+      </div>
+    </div>
+
+    <h2>Other shelving systems considered</h2>
+    <p class="hint">The planner picks one system automatically based on your inputs, but any of these could work depending on budget, tools, and how often you want to rearrange.</p>
+    <div class="ref-grid" id="refGrid"></div>
+
+    <footer>
+      &copy; 2025 The City Project. All rights reserved.
+    </footer>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Reference data: shelf systems, use-case presets, span tables ----------
+
+  var SYSTEMS = {
+    adjustable_case: {
+      key: "adjustable_case",
+      name: "Adjustable pin-shelf bookcase",
+      tag: "Most flexible",
+      desc: "A boxed case (sides, top, bottom, optional back) with rows of drilled holes so shelves can move to new heights on shelf pins.",
+      pros: "Reconfigurable as needs change; strong; clean look.",
+      cons: "More drilling/setup time than a fixed shelf."
+    },
+    fixed_case: {
+      key: "fixed_case",
+      name: "Fixed ladder / cleated shelving",
+      tag: "Simplest to build",
+      desc: "Shelves are screwed or cleated permanently at set heights inside a case or between two uprights.",
+      pros: "Fast to build, fewer parts, very rigid.",
+      cons: "Heights can't be changed later without disassembly."
+    },
+    floating: {
+      key: "floating",
+      name: "Floating shelves",
+      tag: "Best for light display",
+      desc: "Individual shelves fixed directly to the wall on concealed brackets or cleats, no visible sides.",
+      pros: "Minimal, doesn't box in the space.",
+      cons: "Lower load capacity, needs solid wall anchoring."
+    },
+    modular_cube: {
+      key: "modular_cube",
+      name: "Modular cube storage",
+      tag: "Best for mixed items",
+      desc: "A grid of equal square-ish cubbies, good for baskets, folded items, and mixed-size objects.",
+      pros: "Very versatile, easy to expand sideways or up.",
+      cons: "Less efficient for tall or oddly-shaped items."
+    },
+    heavy_duty: {
+      key: "heavy_duty",
+      name: "Heavy-duty garage/workshop shelving",
+      tag: "Best for tools & bins",
+      desc: "Fewer, thicker shelves on a sturdy frame, sized for heavy or bulky loads with short spans between supports.",
+      pros: "High load capacity, tolerant of rough use.",
+      cons: "Bulkier, less refined appearance."
+    },
+    pantry_slide: {
+      key: "pantry_slide",
+      name: "Pantry shelving (deep, close-spaced)",
+      tag: "Best for kitchens",
+      desc: "Deep, closely-spaced fixed or adjustable shelves sized for kitchen goods, with narrower spacing near the bottom.",
+      pros: "Maximizes storage for small kitchen items.",
+      cons: "Deep shelves can hide items at the back."
+    }
+  };
+
+  var USE_CASES = {
+    books:   { label: "Books & media",        spacing: 30, depth: 28, load: "medium", system: "adjustable_case" },
+    kitchen: { label: "Kitchen / pantry",      spacing: 32, depth: 32, load: "medium", system: "pantry_slide" },
+    closet:  { label: "Closet / wardrobe",     spacing: 40, depth: 42, load: "medium", system: "modular_cube" },
+    garage:  { label: "Garage / workshop",     spacing: 45, depth: 45, load: "heavy",  system: "heavy_duty" },
+    display: { label: "Display / decor",       spacing: 35, depth: 22, load: "light",  system: "floating" },
+    office:  { label: "Office / files",        spacing: 32, depth: 30, load: "medium", system: "adjustable_case" },
+    kids:    { label: "Kids' room",            spacing: 28, depth: 25, load: "light",  system: "modular_cube" }
+  };
+
+  // Max unsupported span (cm) by thickness (mm) and load class, for plywood/solid baseline.
+  var SPAN_TABLE = {
+    18: { light: 90, medium: 70, heavy: 50 },
+    25: { light: 110, medium: 90, heavy: 65 }
+  };
+  var MATERIAL_FACTOR = { plywood: 1.0, solid: 1.0, mdf: 0.85, melamine: 0.8 };
+  var MATERIAL_LABEL = { plywood: "Plywood", solid: "Solid wood", mdf: "MDF", melamine: "Melamine / particleboard" };
+
+  function maxSpanCm(thicknessMm, loadClass, material) {
+    return SPAN_TABLE[thicknessMm][loadClass] * MATERIAL_FACTOR[material];
+  }
+
+  function cmIn(cm) {
+    var inches = cm / 2.54;
+    return cm.toFixed(1) + " cm (" + inches.toFixed(1) + " in)";
+  }
+
+  // ---------- Reference cards ----------
+
+  function renderRefGrid(pickedKey) {
+    var grid = document.getElementById("refGrid");
+    grid.innerHTML = "";
+    Object.keys(SYSTEMS).forEach(function (k) {
+      var s = SYSTEMS[k];
+      var div = document.createElement("div");
+      div.className = "ref-card" + (k === pickedKey ? " picked" : "");
+      div.innerHTML =
+        "<span class='tag'>" + s.tag + (k === pickedKey ? " · recommended for you" : "") + "</span>" +
+        "<h4>" + s.name + "</h4>" +
+        "<p>" + s.desc + "</p>" +
+        "<p class='muted'><strong>Pros:</strong> " + s.pros + "<br><strong>Cons:</strong> " + s.cons + "</p>";
+      grid.appendChild(div);
+    });
+  }
+  renderRefGrid(null);
+
+  // ---------- Photo + calibration + area marking ----------
+
+  var photoInput = document.getElementById("photoInput");
+  var photoWrap = document.getElementById("photoWrap");
+  var btnCalibrate = document.getElementById("btnCalibrate");
+  var btnArea = document.getElementById("btnArea");
+  var calStatus = document.getElementById("calStatus");
+  var areaStatus = document.getElementById("areaStatus");
+  var calInputWrap = document.getElementById("calInputWrap");
+  var btnSetScale = document.getElementById("btnSetScale");
+  var calRealLength = document.getElementById("calRealLength");
+
+  var canvas = null, ctx = null, img = null;
+  var mode = null; // 'calibrate' | 'area' | null
+  var pendingPoint = null;
+  var calibration = null; // {p1, p2, pxPerCm}
+  var areaRect = null;    // {p1, p2} in canvas pixel space
+
+  photoInput.addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      img = new Image();
+      img.onload = function () {
+        setupCanvas();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function setupCanvas() {
+    photoWrap.classList.remove("empty");
+    photoWrap.innerHTML = "";
+    canvas = document.createElement("canvas");
+    var maxW = 800;
+    var scale = Math.min(1, maxW / img.naturalWidth);
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+    canvas.id = "shelfCanvas";
+    photoWrap.appendChild(canvas);
+    ctx = canvas.getContext("2d");
+    calibration = null;
+    areaRect = null;
+    mode = null;
+    pendingPoint = null;
+    calStatus.textContent = "";
+    areaStatus.textContent = "";
+    calInputWrap.style.display = "none";
+    btnCalibrate.disabled = false;
+    btnArea.disabled = false;
+    canvas.addEventListener("click", handleCanvasClick);
+    redraw();
+  }
+
+  function canvasPointFromEvent(evt) {
+    var rect = canvas.getBoundingClientRect();
+    var x = (evt.clientX - rect.left) * (canvas.width / rect.width);
+    var y = (evt.clientY - rect.top) * (canvas.height / rect.height);
+    return { x: x, y: y };
+  }
+
+  btnCalibrate.addEventListener("click", function () {
+    mode = "calibrate";
+    pendingPoint = null;
+    calibration = null;
+    calStatus.textContent = "Click the first end of a known-length line in the photo.";
+    calInputWrap.style.display = "none";
+    btnCalibrate.classList.add("active");
+    btnArea.classList.remove("active");
+  });
+
+  btnArea.addEventListener("click", function () {
+    mode = "area";
+    pendingPoint = null;
+    areaRect = null;
+    areaStatus.textContent = "Click one corner of the shelf area.";
+    btnArea.classList.add("active");
+    btnCalibrate.classList.remove("active");
+  });
+
+  function handleCanvasClick(evt) {
+    if (!mode) return;
+    var pt = canvasPointFromEvent(evt);
+
+    if (mode === "calibrate") {
+      if (!pendingPoint) {
+        pendingPoint = pt;
+        calStatus.textContent = "Now click the other end of that known-length line.";
+      } else {
+        calibration = { p1: pendingPoint, p2: pt, pxPerCm: null };
+        pendingPoint = null;
+        mode = null;
+        btnCalibrate.classList.remove("active");
+        calStatus.textContent = "Line marked — enter its real length below.";
+        calInputWrap.style.display = "flex";
+      }
+      redraw();
+      return;
+    }
+
+    if (mode === "area") {
+      if (!pendingPoint) {
+        pendingPoint = pt;
+        areaStatus.textContent = "Now click the opposite corner of the shelf area.";
+      } else {
+        areaRect = { p1: pendingPoint, p2: pt };
+        pendingPoint = null;
+        mode = null;
+        btnArea.classList.remove("active");
+        applyAreaMeasurement();
+      }
+      redraw();
+      return;
+    }
+  }
+
+  btnSetScale.addEventListener("click", function () {
+    var realCm = parseFloat(calRealLength.value);
+    if (!calibration || !realCm || realCm <= 0) {
+      calStatus.textContent = "Enter a valid real-world length first.";
+      return;
+    }
+    var dx = calibration.p2.x - calibration.p1.x;
+    var dy = calibration.p2.y - calibration.p1.y;
+    var pxDist = Math.sqrt(dx * dx + dy * dy);
+    calibration.pxPerCm = pxDist / realCm;
+    calStatus.textContent = "Scale set: " + calibration.pxPerCm.toFixed(2) + " px/cm.";
+    calInputWrap.style.display = "none";
+    if (areaRect) applyAreaMeasurement();
+  });
+
+  function applyAreaMeasurement() {
+    var dx = Math.abs(areaRect.p2.x - areaRect.p1.x);
+    var dy = Math.abs(areaRect.p2.y - areaRect.p1.y);
+    if (calibration && calibration.pxPerCm) {
+      var wCm = dx / calibration.pxPerCm;
+      var hCm = dy / calibration.pxPerCm;
+      document.getElementById("widthCm").value = wCm.toFixed(1);
+      document.getElementById("heightCm").value = hCm.toFixed(1);
+      areaStatus.textContent = "Measured ~" + wCm.toFixed(1) + " x " + hCm.toFixed(1) + " cm from photo. Adjust the fields below if perspective skewed this.";
+    } else {
+      areaStatus.textContent = "Area marked, but set a scale first (step 1) to auto-fill width/height — or enter them manually below.";
+    }
+  }
+
+  function redraw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    if (calibration) {
+      ctx.strokeStyle = "#e0a800";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(calibration.p1.x, calibration.p1.y);
+      ctx.lineTo(calibration.p2.x, calibration.p2.y);
+      ctx.stroke();
+      [calibration.p1, calibration.p2].forEach(function (p) {
+        ctx.fillStyle = "#e0a800";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    if (areaRect) {
+      var x = Math.min(areaRect.p1.x, areaRect.p2.x);
+      var y = Math.min(areaRect.p1.y, areaRect.p2.y);
+      var w = Math.abs(areaRect.p2.x - areaRect.p1.x);
+      var h = Math.abs(areaRect.p2.y - areaRect.p1.y);
+      ctx.strokeStyle = "#2d4739";
+      ctx.setLineDash([6, 4]);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
+      ctx.setLineDash([]);
+    }
+
+    if (pendingPoint) {
+      ctx.fillStyle = "#c0392b";
+      ctx.beginPath();
+      ctx.arc(pendingPoint.x, pendingPoint.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (window._shelfOverlayLines && areaRect) {
+      drawShelfOverlay();
+    }
+  }
+
+  function drawShelfOverlay() {
+    var lines = window._shelfOverlayLines; // {hFractions:[...], vFractions:[...]}
+    var x = Math.min(areaRect.p1.x, areaRect.p2.x);
+    var y = Math.min(areaRect.p1.y, areaRect.p2.y);
+    var w = Math.abs(areaRect.p2.x - areaRect.p1.x);
+    var h = Math.abs(areaRect.p2.y - areaRect.p1.y);
+
+    ctx.strokeStyle = "rgba(45,71,57,0.85)";
+    ctx.lineWidth = 3;
+    lines.hFractions.forEach(function (f) {
+      var yy = y + h * f;
+      ctx.beginPath();
+      ctx.moveTo(x, yy);
+      ctx.lineTo(x + w, yy);
+      ctx.stroke();
+    });
+    lines.vFractions.forEach(function (f) {
+      var xx = x + w * f;
+      ctx.beginPath();
+      ctx.moveTo(xx, y);
+      ctx.lineTo(xx, y + h);
+      ctx.stroke();
+    });
+  }
+
+  // ---------- Plan generation ----------
+
+  function computePlan() {
+    var widthCm = parseFloat(document.getElementById("widthCm").value);
+    var heightCm = parseFloat(document.getElementById("heightCm").value);
+    var depthCm = parseFloat(document.getElementById("depthCm").value);
+    var useCaseKey = document.getElementById("useCase").value;
+    var flexibility = document.getElementById("flexibility").value;
+    var material = document.getElementById("material").value;
+    var loadSel = document.getElementById("loadClass").value;
+    var thickSel = document.getElementById("thickness").value;
+    var includeBack = document.getElementById("includeBack").checked;
+
+    if (!widthCm || !heightCm || !depthCm || widthCm <= 0 || heightCm <= 0 || depthCm <= 0) {
+      alert("Please enter valid width, height, and depth (in cm) before generating a plan.");
+      return null;
+    }
+
+    var preset = USE_CASES[useCaseKey];
+    var loadClass = loadSel === "auto" ? preset.load : loadSel;
+
+    // Pick thickness: user choice, or auto (try 18mm, escalate to 25mm if too many bays needed)
+    var thicknessMm;
+    if (thickSel !== "auto") {
+      thicknessMm = parseInt(thickSel, 10);
+    } else {
+      var bays18 = baysNeeded(widthCm, 18, loadClass, material);
+      thicknessMm = bays18 <= 4 ? 18 : 25;
+    }
+    var numBays = baysNeeded(widthCm, thicknessMm, loadClass, material);
+    var manySpanNote = "";
+    if (numBays > 4) {
+      var thickerSuggestion = thicknessMm < 25 ? "25 mm material, " : "thicker material (30mm+), ";
+      manySpanNote = "This width needs " + numBays + " bays at " + thicknessMm + " mm to keep shelves from sagging. Consider " + thickerSuggestion + "a hardwood edge-stiffener, or a center support beam instead of adding more dividers.";
+    }
+
+    var sideThicknessCm = thicknessMm / 10;
+    var bayWidthCm = (widthCm - (numBays + 1) * sideThicknessCm) / numBays;
+
+    // Number of horizontal shelves (incl. top & bottom) from spacing preset
+    var n = Math.max(2, Math.round(heightCm / preset.spacing) + 1);
+    var actualSpacing = heightCm / (n - 1);
+
+    var systemKey = preset.system;
+    // Adjust system pick slightly based on explicit flexibility choice
+    if (flexibility === "adjustable" && (systemKey === "fixed_case")) systemKey = "adjustable_case";
+    if (flexibility === "fixed" && (systemKey === "adjustable_case")) systemKey = "fixed_case";
+    var system = SYSTEMS[systemKey];
+
+    var parts, hardware, steps;
+    var isFloating = systemKey === "floating";
+
+    if (isFloating) {
+      // Individual wall-mounted shelves: no case sides, no back panel.
+      // numBays segments per shelf need (numBays+1) bracket/support points.
+      var bracketsPerShelf = numBays + 1;
+
+      parts = [];
+      parts.push({
+        name: "Shelf board",
+        qty: n,
+        lengthCm: widthCm,
+        depthCm: depthCm,
+        thicknessMm: thicknessMm
+      });
+
+      hardware = [];
+      hardware.push({
+        name: "Concealed shelf brackets / cleats",
+        qty: n * bracketsPerShelf,
+        note: bracketsPerShelf > 2 ? (bracketsPerShelf - 2) + " center support(s) per shelf needed at this width, plus 2 end supports" : "2 per shelf (one near each end)"
+      });
+      hardware.push({ name: "Wall anchors / screws into studs", qty: n * bracketsPerShelf * 2, note: "2 fixings per bracket; use anchors rated for the load in masonry, or screw into studs" });
+      var edgeBandingCmFloat = n * widthCm;
+      hardware.push({ name: "Edge banding", qty: Math.ceil(edgeBandingCmFloat / 100), note: "meters, for exposed front edges" });
+
+      steps = [];
+      steps.push("Cut all shelf boards to size from the cut list below, and label each one.");
+      steps.push("Sand all edges and faces (120 → 220 grit).");
+      steps.push("Mark bracket positions on the wall with a level: " + bracketsPerShelf + " support point(s) per shelf, at each of the " + n + " heights (spaced roughly " + actualSpacing.toFixed(1) + " cm apart).");
+      steps.push("Locate wall studs where possible; where you must anchor into masonry or plasterboard alone, use anchors rated for the expected load.");
+      steps.push("Install the brackets or cleats level and secure.");
+      steps.push("Set each shelf board onto its brackets and fix from underneath or through the cleat.");
+      steps.push("Finish with paint, oil, or varnish as desired.");
+
+      var floatWarn = "Floating shelves mount directly to the wall — no case or back panel needed, so any back-panel choice above is ignored.";
+      manySpanNote = manySpanNote ? (manySpanNote + " " + floatWarn) : floatWarn;
+    } else {
+      // ---- Parts list (boxed case: bookcase / cubbies / pantry / garage) ----
+      parts = [];
+      parts.push({
+        name: "Side panel / divider",
+        qty: numBays + 1,
+        lengthCm: heightCm,
+        depthCm: depthCm,
+        thicknessMm: thicknessMm
+      });
+      parts.push({
+        name: flexibility === "adjustable" ? "Shelf (adjustable)" : "Shelf (fixed)",
+        qty: n * numBays,
+        lengthCm: bayWidthCm,
+        depthCm: depthCm,
+        thicknessMm: thicknessMm
+      });
+      if (includeBack) {
+        parts.push({
+          name: "Back panel",
+          qty: 1,
+          lengthCm: widthCm,
+          depthCm: heightCm,
+          thicknessMm: 6,
+          isBack: true
+        });
+      }
+
+      // ---- Hardware ----
+      hardware = [];
+      var movableShelves = Math.max(0, n - 2) * numBays;
+      if (flexibility === "adjustable") {
+        hardware.push({ name: "Shelf support pins (5mm)", qty: movableShelves * 4, note: "4 per adjustable shelf" });
+        hardware.push({ name: "Shelf-pin holes to drill", qty: (numBays + 1) * 2, note: "2 vertical rows per side/divider face, spaced evenly along the height" });
+      } else {
+        hardware.push({ name: "Shelf cleats or L-brackets", qty: movableShelves * 2, note: "2 per fixed shelf (excludes top/bottom)" });
+      }
+      hardware.push({ name: "Wood screws (assorted, 4x40mm)", qty: (numBays + 1) * 2 * 4, note: "For top/bottom joints and cleats" });
+      hardware.push({ name: "Wood glue", qty: 1, note: "1 bottle, for all structural joints" });
+      if (includeBack) {
+        hardware.push({ name: "Panel pins / narrow staples", qty: Math.ceil((2 * (widthCm + heightCm)) / 10), note: "Roughly every 10cm around the back panel edge" });
+      }
+      var edgeBandingCm = n * numBays * bayWidthCm + (numBays + 1) * heightCm;
+      hardware.push({ name: "Edge banding", qty: Math.ceil(edgeBandingCm / 100), note: "meters, for exposed front edges" });
+      hardware.push({ name: "Wall anti-tip brackets", qty: heightCm > 100 ? 2 : 0, note: heightCm > 100 ? "Recommended — unit is taller than 100cm" : "Optional for low units" });
+
+      // ---- Assembly steps ----
+      steps = [];
+      steps.push("Cut all panels to the finished sizes in the cut list below, and label each piece in pencil.");
+      steps.push("Sand all edges and inner faces (120 → 220 grit).");
+      if (flexibility === "adjustable") {
+        steps.push("Mark and drill shelf-pin holes on the inside faces of the sides/dividers: two rows front-to-back, spaced roughly " + actualSpacing.toFixed(1) + " cm apart vertically, about 3–4cm in from the front and back edges.");
+      }
+      steps.push("Attach the bottom panel to the sides/dividers with glue and screws (pre-drill to avoid splitting); check the assembly is square.");
+      steps.push("Attach the top panel the same way.");
+      if (includeBack) {
+        steps.push("Check the case is square by measuring both diagonals (they should match), then attach the back panel with glue and panel pins — this locks the whole unit square.");
+      }
+      steps.push(flexibility === "adjustable"
+        ? "Insert shelf pins at the desired heights and drop the shelves in."
+        : "Fix the remaining shelves in place at their marked heights using cleats or brackets, glue and screws.");
+      steps.push("Secure the finished unit to the wall (L-brackets or anti-tip straps), especially if it is taller than about 100cm or there are children in the home.");
+      steps.push("Finish with paint, oil, or varnish as desired.");
+    }
+
+    return {
+      widthCm: widthCm, heightCm: heightCm, depthCm: depthCm,
+      useCase: preset, system: system,
+      numBays: numBays, bayWidthCm: bayWidthCm, n: n, actualSpacing: actualSpacing,
+      thicknessMm: thicknessMm, material: material, loadClass: loadClass,
+      flexibility: flexibility, includeBack: includeBack,
+      parts: parts, hardware: hardware, steps: steps,
+      manySpanNote: manySpanNote,
+      systemKey: systemKey,
+      isFloating: isFloating
+    };
+  }
+
+  function baysNeeded(widthCm, thicknessMm, loadClass, material) {
+    var span = maxSpanCm(thicknessMm, loadClass, material);
+    var sideThicknessCm = thicknessMm / 10;
+    var b = 1;
+    while (b < 8) {
+      var bayWidth = (widthCm - (b + 1) * sideThicknessCm) / b;
+      if (bayWidth <= span) return b;
+      b++;
+    }
+    return b;
+  }
+
+  // ---------- Rendering results ----------
+
+  function renderResults(plan) {
+    document.getElementById("results").style.display = "block";
+    document.getElementById("planTitle").textContent = plan.system.name;
+    document.getElementById("planDesc").textContent = plan.system.desc + " Sized for " + plan.useCase.label.toLowerCase() + ".";
+    document.getElementById("planSpecs").textContent =
+      "Opening: " + cmIn(plan.widthCm) + " wide x " + cmIn(plan.heightCm) + " tall x " + cmIn(plan.depthCm) + " deep · " +
+      plan.numBays + " bay(s) · " + plan.n + " shelf levels (incl. top/bottom), spaced ~" + plan.actualSpacing.toFixed(1) + " cm apart · " +
+      plan.thicknessMm + " mm " + MATERIAL_LABEL[plan.material] + " · " + plan.loadClass + " load.";
+    document.getElementById("planWarn").textContent = plan.manySpanNote || "";
+
+    renderRefGrid(plan.systemKey);
+    renderCutList(plan);
+    renderHardware(plan);
+    renderSteps(plan);
+    renderSchematic(plan);
+    renderOverlay(plan);
+  }
+
+  function renderCutList(plan) {
+    var tbody = document.querySelector("#cutListTable tbody");
+    tbody.innerHTML = "";
+    plan.parts.forEach(function (p) {
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + p.name + "</td>" +
+        "<td>" + p.qty + "</td>" +
+        "<td>" + cmIn(p.lengthCm) + "</td>" +
+        "<td>" + cmIn(p.depthCm) + "</td>" +
+        "<td>" + p.thicknessMm + " mm</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderHardware(plan) {
+    var tbody = document.querySelector("#hardwareTable tbody");
+    tbody.innerHTML = "";
+    plan.hardware.forEach(function (h) {
+      if (h.qty === 0) return;
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + h.name + "</td><td>" + h.qty + "</td><td>" + h.note + "</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderSteps(plan) {
+    var ol = document.getElementById("stepsList");
+    ol.innerHTML = "";
+    plan.steps.forEach(function (s) {
+      var li = document.createElement("li");
+      li.textContent = s;
+      ol.appendChild(li);
+    });
+  }
+
+  function renderSchematic(plan) {
+    var pxPerCm = Math.min(6, 620 / plan.widthCm);
+    var margin = 60;
+    var w = plan.widthCm * pxPerCm;
+    var h = plan.heightCm * pxPerCm;
+    var svgW = w + margin * 2;
+    var svgH = h + margin * 2;
+    var ox = margin, oy = margin;
+
+    var parts = [];
+    parts.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + svgW + ' ' + svgH + '" width="100%" role="img" aria-label="Shelf elevation drawing">');
+
+    if (plan.isFloating) {
+      // Wall line + individual boards on brackets, no case outline.
+      parts.push('<line x1="' + ox + '" y1="' + oy + '" x2="' + ox + '" y2="' + (oy + h) + '" stroke="#999" stroke-width="4"/>');
+      var boardH = Math.max(6, Math.min(14, h / plan.n * 0.35));
+      for (var i2 = 0; i2 < plan.n; i2++) {
+        var by = oy + (plan.n === 1 ? h / 2 : (h / (plan.n - 1)) * i2) - boardH / 2;
+        parts.push('<rect x="' + ox + '" y="' + by + '" width="' + w + '" height="' + boardH + '" fill="#fff" stroke="#2d4739" stroke-width="2"/>');
+        // bracket marks
+        var bracketsPerShelf = plan.numBays + 1;
+        for (var bk = 0; bk < bracketsPerShelf; bk++) {
+          var bx = ox + (bracketsPerShelf === 1 ? w / 2 : (w / (bracketsPerShelf - 1)) * bk);
+          parts.push('<line x1="' + bx + '" y1="' + (by + boardH) + '" x2="' + bx + '" y2="' + (by + boardH + 8) + '" stroke="#2d4739" stroke-width="2"/>');
+        }
+      }
+      parts.push('<rect x="' + ox + '" y="' + oy + '" width="' + w + '" height="' + h + '" fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4 4"/>');
+    } else {
+      parts.push('<rect x="' + ox + '" y="' + oy + '" width="' + w + '" height="' + h + '" fill="#fff" stroke="#2d4739" stroke-width="2"/>');
+
+      // vertical dividers
+      for (var b = 1; b < plan.numBays; b++) {
+        var vx = ox + (w / plan.numBays) * b;
+        parts.push('<line x1="' + vx + '" y1="' + oy + '" x2="' + vx + '" y2="' + (oy + h) + '" stroke="#2d4739" stroke-width="2"/>');
+      }
+      // horizontal shelves
+      for (var i = 0; i < plan.n; i++) {
+        var hy = oy + (h / (plan.n - 1)) * i;
+        parts.push('<line x1="' + ox + '" y1="' + hy + '" x2="' + (ox + w) + '" y2="' + hy + '" stroke="#2d4739" stroke-width="2"/>');
+      }
+    }
+
+    // width dimension line (top)
+    var dy = oy - 22;
+    parts.push('<line x1="' + ox + '" y1="' + dy + '" x2="' + (ox + w) + '" y2="' + dy + '" stroke="#888" stroke-width="1"/>');
+    parts.push('<text x="' + (ox + w / 2) + '" y="' + (dy - 6) + '" font-size="12" text-anchor="middle" fill="#444">' + plan.widthCm.toFixed(1) + ' cm</text>');
+
+    // height dimension line (left)
+    var dx = ox - 22;
+    parts.push('<line x1="' + dx + '" y1="' + oy + '" x2="' + dx + '" y2="' + (oy + h) + '" stroke="#888" stroke-width="1"/>');
+    parts.push('<text x="' + (dx - 6) + '" y="' + (oy + h / 2) + '" font-size="12" text-anchor="middle" fill="#444" transform="rotate(-90 ' + (dx - 6) + ' ' + (oy + h / 2) + ')">' + plan.heightCm.toFixed(1) + ' cm</text>');
+
+    // depth note
+    parts.push('<text x="' + (ox + w / 2) + '" y="' + (oy + h + 30) + '" font-size="12" text-anchor="middle" fill="#444">Depth: ' + plan.depthCm.toFixed(1) + ' cm</text>');
+
+    parts.push('</svg>');
+    document.getElementById("schematicHolder").innerHTML = parts.join("");
+  }
+
+  function renderOverlay(plan) {
+    var col = document.getElementById("overlayCol");
+    if (!areaRect) {
+      col.style.display = "none";
+      return;
+    }
+    col.style.display = "block";
+    var hFractions = [];
+    for (var i = 0; i < plan.n; i++) hFractions.push(i / (plan.n - 1));
+    var vFractions = [];
+    for (var b = 1; b < plan.numBays; b++) vFractions.push(b / plan.numBays);
+    window._shelfOverlayLines = { hFractions: hFractions, vFractions: vFractions };
+    redraw();
+
+    var holder = document.getElementById("overlayHolder");
+    holder.innerHTML = "";
+    var img2 = document.createElement("img");
+    img2.src = canvas.toDataURL("image/png");
+    img2.style.maxWidth = "100%";
+    img2.style.border = "1px solid #ddd";
+    img2.style.borderRadius = "8px";
+    holder.appendChild(img2);
+  }
+
+  document.getElementById("btnGenerate").addEventListener("click", function () {
+    var plan = computePlan();
+    if (!plan) return;
+    renderResults(plan);
+    document.getElementById("results").scrollIntoView({ behavior: "smooth" });
+  });
+
+  document.getElementById("btnPrint").addEventListener("click", function () {
+    window.print();
+  });
+
+})();
+</script>
+</body>
+</html>
